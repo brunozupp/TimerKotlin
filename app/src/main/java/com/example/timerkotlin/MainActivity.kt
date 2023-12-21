@@ -56,9 +56,14 @@ class MainActivity : AppCompatActivity() {
     // Show Remove Button
     private fun onTapStart() {
         try {
+
+            editText.isEnabled = false
+
             val number = editText.text.toString().toLong()
 
             val millisecondsTimer = (if(milliseconds != null) milliseconds else number * 60 * 1000)!!
+
+            result.text = formatMinuteSecond(millisecondsTimer)
 
             if(milliseconds == null) {
                 milliseconds = millisecondsTimer
@@ -73,13 +78,7 @@ class MainActivity : AppCompatActivity() {
                 // A cada segundo (no caso o countDownInterval) vai executar essa função. O valor em milesegundos de quanto falta para acabar a contagem
                 override fun onTick(millisUntilFinished: Long) {
 
-                    var seconds = millisUntilFinished / 1000 // -> preciso fazer o módulo disso pois se não vai pegar o valor original dos segundos pra mostrar
-                    // na tela, por exemplo, 2 minutos mostraria 2:120
-                    val minutes = seconds / 60
-
-                    seconds = seconds % 60
-
-                    result.text = String.format("%02d:%02d", minutes, seconds)
+                    result.text = formatMinuteSecond(millisUntilFinished)
 
                     milliseconds = millisUntilFinished
                 }
@@ -92,6 +91,8 @@ class MainActivity : AppCompatActivity() {
                     buttonRedo.visibility = View.GONE
                     buttonStop.visibility = View.GONE
                     buttonRemove.visibility = View.GONE
+
+                    editText.isEnabled = true
                 }
 
             }
@@ -105,7 +106,19 @@ class MainActivity : AppCompatActivity() {
 
         } catch(e: NumberFormatException) {
             Toast.makeText(this, "Digite um número no campo de texto!", Toast.LENGTH_SHORT).show()
+
+            editText.isEnabled = true
         }
+    }
+
+    private fun formatMinuteSecond(milliseconds: Long) : String {
+        var seconds = milliseconds / 1000 // -> preciso fazer o módulo disso pois se não vai pegar o valor original dos segundos pra mostrar
+        // na tela, por exemplo, 2 minutos mostraria 2:120
+        val minutes = seconds / 60
+
+        seconds = seconds % 60
+
+        return String.format("%02d:%02d", minutes, seconds)
     }
 
     // Hide Start Button
@@ -142,6 +155,8 @@ class MainActivity : AppCompatActivity() {
         milliseconds = null
 
         result.text = ""
+
+        editText.isEnabled = true
 
         buttonStart.visibility = View.VISIBLE
         buttonRedo.visibility = View.GONE
